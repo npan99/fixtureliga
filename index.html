@@ -46,23 +46,16 @@
       flex-direction: column;
       gap: 0.2rem;
     }
-    .team {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #333;
-      border-radius: 3px;
-      padding: 0.2rem;
-      cursor: pointer;
-    }
+    $1
+  transition: all 0.3s ease;
+}
     .team img {
       width: 20px;
       height: 20px;
     }
-    .team.selected {
-      outline: 2px solid #fff;
-      outline-offset: 1px;
-    }
+    $1
+  transform: scale(1.1);
+  background-color: #007bff;
     .trophy-column {
       width: 80px;
       display: flex;
@@ -124,16 +117,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   const duelosIzq = [
-  ['Argentinos_Juniors_logo', 'InstitutoACC_logo'],
-  ['San_Lorenzo_escudo', 'Club_Atlético_Tigre'],
-  ['River_Plate_logo', 'Barracas_Central_logo'],
-  ['Racing_Club_logo', 'Club_Atlético_Platense_logo']
+  ['argentinos', 'instituto'],
+  ['sanlorenzo', 'tigre'],
+  ['river', 'barracas'],
+  ['racing', 'platense']
 ];
   const duelosDer = [
-  ['Rosario_Central_logo', 'Estudiantes_LP_logo'],
-  ['Club_Atlético_Huracán_logo', 'Deportivo_Riestra_logo'],
-  ['Boca_Juniors_logo', 'Club_Atlético_Lanús_logo'],
-  ['Independiente_escudo', 'Independiente_Rivadavia_logo']
+  ['rosario', 'estudiantes'],
+  ['huracan', 'riestra'],
+  ['boca', 'lanus'],
+  ['independiente', 'independientemza']
 ];
   const fechas = [
     '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
@@ -156,10 +149,10 @@
     teams.className = 'teams';
     const team1 = document.createElement('div');
     team1.className = 'team';
-    team1.innerHTML = `<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/\${equipo1}.svg/40px-\${equipo1}.svg.png'>`;
+    team1.innerHTML = `<img src='escudos/${equipo1}.png'>`;
     const team2 = document.createElement('div');
     team2.className = 'team';
-    team2.innerHTML = `<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/\${equipo2}.svg/40px-\${equipo2}.svg.png'>`;
+    team2.innerHTML = `<img src='escudos/${equipo2}.png'>`;
     const date = document.createElement('div');
     date.className = 'date';
     date.textContent = fecha;
@@ -230,7 +223,7 @@
     finalContainer.innerHTML = '';
     championDisplay.innerHTML = '';
     const match = crearMatch(finalistas[0], finalistas[1], '', (campeon) => {
-      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/\${campeon}.svg/40px-\${campeon}.svg.png'>`;
+      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='escudos/${campeon}.png'>`;
     });
     finalContainer.appendChild(match);
   }
@@ -261,4 +254,3 @@ shareBtn.addEventListener('click', async () => {
 </script>
 </body>
 </html>
-
