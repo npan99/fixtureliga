@@ -157,10 +157,10 @@
     teams.className = 'teams';
     const team1 = document.createElement('div');
     team1.className = 'team';
-    team1.innerHTML = `<img src='https://fixtureliga-feaq.vercel.app/escudos/${equipo1}.png'>`;
+    team1.innerHTML = `<img src='https://fixtureliga.vercel.app/escudos/${equipo1}.png'>`;
     const team2 = document.createElement('div');
     team2.className = 'team';
-    team2.innerHTML = `<img src='https://fixtureliga-feaq.vercel.app/escudos/${equipo2}.png'>`;
+    team2.innerHTML = `<img src='https://fixtureliga.vercel.app/escudos/${equipo2}.png'>`;
     const date = document.createElement('div');
     date.className = 'date';
     date.textContent = fecha;
@@ -231,7 +231,7 @@
     finalContainer.innerHTML = '';
     championDisplay.innerHTML = '';
     const match = crearMatch(finalistas[0], finalistas[1], '', (campeon) => {
-      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='https://fixtureliga-feaq.vercel.app/escudos/${campeon}.png'>`;
+      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='https://fixtureliga.vercel.app/escudos/${campeon}.png'>`;
     });
     finalContainer.appendChild(match);
   }
@@ -262,3 +262,4 @@ shareBtn.addEventListener('click', async () => {
 </script>
 </body>
 </html>
+
