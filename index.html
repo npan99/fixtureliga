@@ -124,17 +124,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   const duelosIzq = [
-    ['aaaj', 'instituto'],
-    ['sanlorenzo', 'tigre'],
-    ['river', 'barracas'],
-    ['racing', 'platense']
-  ];
+  ['Argentinos_Juniors_logo', 'InstitutoACC_logo'],
+  ['San_Lorenzo_escudo', 'Club_Atlético_Tigre'],
+  ['River_Plate_logo', 'Barracas_Central_logo'],
+  ['Racing_Club_logo', 'Club_Atlético_Platense_logo']
+];
   const duelosDer = [
-    ['rosariocentral', 'estudiantes'],
-    ['huracan', 'riestra'],
-    ['boca', 'lanus'],
-    ['independiente', 'independientemza']
-  ];
+  ['Rosario_Central_logo', 'Estudiantes_LP_logo'],
+  ['Club_Atlético_Huracán_logo', 'Deportivo_Riestra_logo'],
+  ['Boca_Juniors_logo', 'Club_Atlético_Lanús_logo'],
+  ['Independiente_escudo', 'Independiente_Rivadavia_logo']
+];
   const fechas = [
     '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
     '10/05 - 16:30', '11/05 - 20:30', '10/05 - 21:00', '11/05 - 15:30'
@@ -156,10 +156,10 @@
     teams.className = 'teams';
     const team1 = document.createElement('div');
     team1.className = 'team';
-    team1.innerHTML = `<img src='https://via.placeholder.com/40x40?text=${equipo1}'>`;
+    team1.innerHTML = `<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/\${equipo1}.svg/40px-\${equipo1}.svg.png'>`;
     const team2 = document.createElement('div');
     team2.className = 'team';
-    team2.innerHTML = `<img src='https://via.placeholder.com/40x40?text=${equipo2}'>`;
+    team2.innerHTML = `<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/\${equipo2}.svg/40px-\${equipo2}.svg.png'>`;
     const date = document.createElement('div');
     date.className = 'date';
     date.textContent = fecha;
@@ -230,7 +230,7 @@
     finalContainer.innerHTML = '';
     championDisplay.innerHTML = '';
     const match = crearMatch(finalistas[0], finalistas[1], '', (campeon) => {
-      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='https://via.placeholder.com/40x40?text=${campeon}'>`;
+      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/\${campeon}.svg/40px-\${campeon}.svg.png'>`;
     });
     finalContainer.appendChild(match);
   }
@@ -261,3 +261,4 @@ shareBtn.addEventListener('click', async () => {
 </script>
 </body>
 </html>
+
