@@ -242,7 +242,7 @@ shareBtn.addEventListener('click', async () => {
   canvas.toBlob(async blob => {
     const formData = new FormData();
     formData.append('image', blob);
-    formData.append('key', 'YOUR_IMGBB_API_KEY'); // Reemplazá con tu API key de imgbb
+    formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5'); // Reemplazá con tu API key de imgbb
 
     try {
       const res = await fetch('https://api.imgbb.com/1/upload', {
