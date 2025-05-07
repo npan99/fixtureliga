@@ -10,6 +10,7 @@
       margin: 0;
       padding: 2rem;
       color: white;
+      position: relative;
     }
     .fixture {
       display: flex;
@@ -17,6 +18,8 @@
       justify-content: space-around;
       align-items: center;
       gap: 1rem;
+      position: relative;
+      z-index: 1;
     }
     .column {
       display: flex;
@@ -116,6 +119,8 @@
     <div class="column" id="col-right"></div>
   </div>
 
+  <svg id="lines-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></svg>
+
   <div id="branding">
     <img src="logo-bolavip.png" alt="Bolavip">
   </div>
@@ -123,19 +128,19 @@
   <button id="shareBtn">Compartir por WhatsApp</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
+  <script>
   const duelosIzq = [
-  ['argentinos', 'instituto'],
-  ['sanlorenzo', 'tigre'],
-  ['river', 'barracas'],
-  ['racing', 'platense']
-];
+    ['argentinos', 'instituto'],
+    ['sanlorenzo', 'tigre'],
+    ['river', 'barracas'],
+    ['racing', 'platense']
+  ];
   const duelosDer = [
-  ['rosario', 'estudiantes'],
-  ['huracan', 'riestra'],
-  ['boca', 'lanus'],
-  ['independiente', 'independientemza']
-];
+    ['rosario', 'estudiantes'],
+    ['huracan', 'riestra'],
+    ['boca', 'lanus'],
+    ['independiente', 'independientemza']
+  ];
   const fechas = [
     '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
     '10/05 - 16:30', '11/05 - 20:30', '10/05 - 21:00', '11/05 - 15:30'
@@ -236,29 +241,74 @@
     finalContainer.appendChild(match);
   }
 
-  const shareBtn = document.getElementById('shareBtn');
-shareBtn.addEventListener('click', async () => {
-  const captureEl = document.getElementById('capture');
-  const canvas = await html2canvas(captureEl, { useCORS: true });
-  canvas.toBlob(async blob => {
-    const formData = new FormData();
-    formData.append('image', blob);
-    formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5'); // Reemplazá con tu API key de imgbb
+  // Dibujar líneas entre cruces
+  function drawLineBetween(el1, el2) {
+    const svg = document.getElementById('lines-svg');
+    const r1 = el1.getBoundingClientRect();
+    const r2 = el2.getBoundingClientRect();
+    const x1 = r1.right + window.scrollX;
+    const y1 = r1.top + r1.height / 2 + window.scrollY;
+    const x2 = r2.left + window.scrollX;
+    const y2 = r2.top + r2.height / 2 + window.scrollY;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "white");
+    line.setAttribute("stroke-width", "2");
+    svg.appendChild(line);
+  }
 
-    try {
-      const res = await fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const json = await res.json();
-      const imageUrl = json.data.url;
-      window.open(`https://wa.me/?text=¡Mirá mi pronóstico de la Copa LPF! %0A${imageUrl}`, '_blank');
-    } catch (err) {
-      console.error('Error al subir la imagen', err);
-      alert('No se pudo compartir la imagen.');
+  function clearLines() {
+    document.getElementById('lines-svg').innerHTML = '';
+  }
+
+  function conectarRondas() {
+    clearLines();
+    const columnas = [
+      'col-left', 'col-quarters-left', 'col-semifinal-left',
+      'final', 'col-semifinal-right', 'col-quarters-right', 'col-right'
+    ].map(id => Array.from(document.getElementById(id).children));
+    for (let i = 0; i < columnas.length - 1; i++) {
+      const colA = columnas[i];
+      const colB = columnas[i + 1];
+      const min = Math.min(colA.length, colB.length);
+      for (let j = 0; j < min; j++) {
+        drawLineBetween(colA[j], colB[Math.floor(j / 2)]);
+      }
     }
+  }
+
+  const observer = new MutationObserver(() => {
+    requestAnimationFrame(conectarRondas);
   });
-});
-</script>
+  observer.observe(document.getElementById('capture'), { childList: true, subtree: true });
+
+  // Botón compartir
+  const shareBtn = document.getElementById('shareBtn');
+  shareBtn.addEventListener('click', async () => {
+    const captureEl = document.getElementById('capture');
+    const canvas = await html2canvas(captureEl, { useCORS: true });
+    canvas.toBlob(async blob => {
+      const formData = new FormData();
+      formData.append('image', blob);
+      formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5');
+      try {
+        const res = await fetch('https://api.imgbb.com/1/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const json = await res.json();
+        const imageUrl = json.data.url;
+        window.open(`https://wa.me/?text=¡Mirá mi pronóstico de la Copa LPF! %0A${imageUrl}`, '_blank');
+      } catch (err) {
+        console.error('Error al subir la imagen', err);
+        alert('No se pudo compartir la imagen.');
+      }
+    });
+  });
+  </script>
 </body>
 </html>
+
