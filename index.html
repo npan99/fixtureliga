@@ -24,8 +24,9 @@
     .column {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 2rem;
       align-items: center;
+      position: relative;
     }
     h1 {
       text-align: center;
@@ -38,6 +39,7 @@
       padding: 0.3rem;
       text-align: center;
       width: 60px;
+      transition: transform 0.4s ease, background-color 0.3s ease;
     }
     .match .date {
       font-size: 0.6rem;
@@ -57,15 +59,16 @@
       border-radius: 3px;
       padding: 0.2rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s ease, transform 0.3s ease;
     }
     .team img {
       width: 20px;
       height: 20px;
     }
     .team.selected {
-      transform: scale(1.1);
+      transform: scale(1.15);
       background-color: #007bff;
+      box-shadow: 0 0 8px #007bff;
     }
     .trophy-column {
       width: 80px;
@@ -104,211 +107,178 @@
   </style>
 </head>
 <body>
-  <h1>Simulador de Fixture - Copa LPF</h1>
-  <div id="capture" class="fixture">
-    <div class="column" id="col-left"></div>
-    <div class="column" id="col-quarters-left"></div>
-    <div class="column" id="col-semifinal-left"></div>
-    <div class="trophy-column">
-      <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
-      <div id="final" class="column"></div>
-      <div id="champion" class="champion"></div>
-    </div>
-    <div class="column" id="col-semifinal-right"></div>
-    <div class="column" id="col-quarters-right"></div>
-    <div class="column" id="col-right"></div>
+<div id="capture" class="fixture">
+  <div class="column" id="col-left"></div>
+  <div class="column" id="col-quarters-left"></div>
+  <div class="column" id="col-semifinal-left"></div>
+  <div class="trophy-column">
+    <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
+    <div id="final" class="column"></div>
+    <div id="champion" class="champion"></div>
   </div>
+  <div class="column" id="col-semifinal-right"></div>
+  <div class="column" id="col-quarters-right"></div>
+  <div class="column" id="col-right"></div>
+</div>
 
-  <svg id="lines-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></svg>
+<svg id="lines-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></svg>
 
-  <div id="branding">
-    <img src="logo-bolavip.png" alt="Bolavip">
-  </div>
+<div id="branding">
+  <img src="logo-bolavip.png" alt="Bolavip">
+</div>
 
-  <button id="shareBtn">Compartir por WhatsApp</button>
+<button id="shareBtn">Compartir por WhatsApp</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script>
-  const duelosIzq = [
-    ['argentinos', 'instituto'],
-    ['sanlorenzo', 'tigre'],
-    ['river', 'barracas'],
-    ['racing', 'platense']
-  ];
-  const duelosDer = [
-    ['rosario', 'estudiantes'],
-    ['huracan', 'riestra'],
-    ['boca', 'lanus'],
-    ['independiente', 'independientemza']
-  ];
-  const fechas = [
-    '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
-    '10/05 - 16:30', '11/05 - 20:30', '10/05 - 21:00', '11/05 - 15:30'
-  ];
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const duelosIzq = [
+  ['argentinos', 'instituto'],
+  ['sanlorenzo', 'tigre'],
+  ['river', 'barracas'],
+  ['racing', 'platense']
+];
+const duelosDer = [
+  ['rosario', 'estudiantes'],
+  ['huracan', 'riestra'],
+  ['boca', 'lanus'],
+  ['independiente', 'independientemza']
+];
+const fechas = [
+  '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
+  '10/05 - 16:30', '11/05 - 20:30', '10/05 - 21:00', '11/05 - 15:30'
+];
 
-  const colLeft = document.getElementById('col-left');
-  const colRight = document.getElementById('col-right');
-  const colQFLeft = document.getElementById('col-quarters-left');
-  const colQFRight = document.getElementById('col-quarters-right');
-  const colSemiL = document.getElementById('col-semifinal-left');
-  const colSemiR = document.getElementById('col-semifinal-right');
-  const finalContainer = document.getElementById('final');
-  const championDisplay = document.getElementById('champion');
+const colLeft = document.getElementById('col-left');
+const colRight = document.getElementById('col-right');
+const colQFLeft = document.getElementById('col-quarters-left');
+const colQFRight = document.getElementById('col-quarters-right');
+const colSemiL = document.getElementById('col-semifinal-left');
+const colSemiR = document.getElementById('col-semifinal-right');
+const finalContainer = document.getElementById('final');
+const championDisplay = document.getElementById('champion');
 
-  function crearMatch(equipo1, equipo2, fecha, avanzar) {
-    const match = document.createElement('div');
-    match.className = 'match';
-    const teams = document.createElement('div');
-    teams.className = 'teams';
-    const team1 = document.createElement('div');
-    team1.className = 'team';
-    team1.innerHTML = `<img src='escudos/${equipo1}.png'>`;
-    const team2 = document.createElement('div');
-    team2.className = 'team';
-    team2.innerHTML = `<img src='escudos/${equipo2}.png'>`;
-    const date = document.createElement('div');
-    date.className = 'date';
-    date.textContent = fecha;
-    team1.addEventListener('click', () => seleccionarGanador(team1, team2, equipo1, avanzar));
-    team2.addEventListener('click', () => seleccionarGanador(team2, team1, equipo2, avanzar));
-    teams.appendChild(team1);
-    if (fecha) teams.appendChild(date);
-    teams.appendChild(team2);
-    match.appendChild(teams);
-    return match;
+function crearMatch(equipo1, equipo2, fecha, avanzar) {
+  const match = document.createElement('div');
+  match.className = 'match';
+  const teams = document.createElement('div');
+  teams.className = 'teams';
+  const team1 = document.createElement('div');
+  team1.className = 'team';
+  team1.innerHTML = `<img src='escudos/${equipo1}.png'>`;
+  const team2 = document.createElement('div');
+  team2.className = 'team';
+  team2.innerHTML = `<img src='escudos/${equipo2}.png'>`;
+  const date = document.createElement('div');
+  date.className = 'date';
+  date.textContent = fecha;
+  team1.addEventListener('click', () => seleccionarGanador(team1, team2, equipo1, avanzar));
+  team2.addEventListener('click', () => seleccionarGanador(team2, team1, equipo2, avanzar));
+  teams.appendChild(team1);
+  if (fecha) teams.appendChild(date);
+  teams.appendChild(team2);
+  match.appendChild(teams);
+  return match;
+}
+
+function seleccionarGanador(g, otro, equipoGanador, avanzar) {
+  g.classList.add('selected');
+  otro.classList.remove('selected');
+  if (avanzar && typeof avanzar === 'function') avanzar(equipoGanador);
+}
+
+function avanzarRonda(equipos, container, siguienteAvance) {
+  container.innerHTML = '';
+  for (let i = 0; i < equipos.length; i += 2) {
+    const match = crearMatch(equipos[i], equipos[i + 1], '', siguienteAvance(i >> 1));
+    container.appendChild(match);
   }
+}
 
-  function seleccionarGanador(g, otro, equipoGanador, avanzar) {
-    g.classList.add('selected');
-    otro.classList.remove('selected');
-    if (avanzar && typeof avanzar === 'function') avanzar(equipoGanador);
-  }
+const ganadoresOctavosIzq = [], ganadoresOctavosDer = [];
+const ganadoresQFIzq = [], ganadoresQFDer = [];
+let finalistaIzq = null, finalistaDer = null;
 
-  function avanzarRonda(equipos, container, siguienteAvance) {
-    container.innerHTML = '';
-    for (let i = 0; i < equipos.length; i += 2) {
-      const match = crearMatch(equipos[i], equipos[i + 1], '', siguienteAvance(i >> 1));
-      container.appendChild(match);
+duelosIzq.forEach((duelo, i) => {
+  const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
+    ganadoresOctavosIzq[i] = ganador;
+    if (ganadoresOctavosIzq.filter(Boolean).length === 4) {
+      avanzarRonda(ganadoresOctavosIzq, colQFLeft, (j) => (g) => {
+        ganadoresQFIzq[j] = g;
+        if (ganadoresQFIzq.filter(Boolean).length === 2) {
+          avanzarRonda(ganadoresQFIzq, colSemiL, (k) => (sf) => {
+            finalistaIzq = sf;
+            if (finalistaIzq && finalistaDer) mostrarFinal();
+          });
+        }
+      });
+    }
+  });
+  colLeft.appendChild(match);
+});
+
+duelosDer.forEach((duelo, i) => {
+  const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
+    ganadoresOctavosDer[i] = ganador;
+    if (ganadoresOctavosDer.filter(Boolean).length === 4) {
+      avanzarRonda(ganadoresOctavosDer, colQFRight, (j) => (g) => {
+        ganadoresQFDer[j] = g;
+        if (ganadoresQFDer.filter(Boolean).length === 2) {
+          avanzarRonda(ganadoresQFDer, colSemiR, (k) => (sf) => {
+            finalistaDer = sf;
+            if (finalistaIzq && finalistaDer) mostrarFinal();
+          });
+        }
+      });
+    }
+  });
+  colRight.appendChild(match);
+});
+
+function mostrarFinal() {
+  finalContainer.innerHTML = '';
+  championDisplay.innerHTML = '';
+  const match = crearMatch(finalistaIzq, finalistaDer, '', (campeon) => {
+    championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='escudos/${campeon}.png'>`;
+  });
+  finalContainer.appendChild(match);
+}
+
+function drawLineBetween(el1, el2) {
+  const svg = document.getElementById('lines-svg');
+  const r1 = el1.getBoundingClientRect();
+  const r2 = el2.getBoundingClientRect();
+  const x1 = r1.left + r1.width + window.scrollX;
+  const y1 = r1.top + r1.height / 2 + window.scrollY;
+  const x2 = r2.left + window.scrollX;
+  const y2 = r2.top + r2.height / 2 + window.scrollY;
+  const midX = (x1 + x2) / 2;
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  const d = `M${x1},${y1} H${midX} V${y2} H${x2}`;
+  path.setAttribute("d", d);
+  path.setAttribute("stroke", "white");
+  path.setAttribute("stroke-width", "2");
+  path.setAttribute("fill", "none");
+  svg.appendChild(path);
+}
+
+function conectarRondas() {
+  document.getElementById('lines-svg').innerHTML = '';
+  const columnIds = [
+    'col-left', 'col-quarters-left', 'col-semifinal-left',
+    'final', 'col-semifinal-right', 'col-quarters-right', 'col-right'
+  ];
+  for (let i = 0; i < columnIds.length - 1; i++) {
+    const colA = document.getElementById(columnIds[i]).children;
+    const colB = document.getElementById(columnIds[i + 1]).children;
+    for (let j = 0; j < colA.length; j++) {
+      const idx = Math.floor(j / 2);
+      if (colB[idx]) drawLineBetween(colA[j], colB[idx]);
     }
   }
+}
 
-  const ganadoresOctavosIzq = [], ganadoresOctavosDer = [];
-  const ganadoresQFIzq = [], ganadoresQFDer = [];
-  let finalistas = [];
-
-  duelosIzq.forEach((duelo, i) => {
-    const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
-      ganadoresOctavosIzq[i] = ganador;
-      if (ganadoresOctavosIzq.filter(Boolean).length === 4) {
-        avanzarRonda(ganadoresOctavosIzq, colQFLeft, (j) => (g) => {
-          ganadoresQFIzq[j] = g;
-          if (ganadoresQFIzq.filter(Boolean).length === 2) {
-            avanzarRonda(ganadoresQFIzq, colSemiL, (k) => (sf) => {
-              finalistas[k] = sf;
-              if (finalistas.filter(Boolean).length === 2) mostrarFinal();
-            });
-          }
-        });
-      }
-    });
-    colLeft.appendChild(match);
-  });
-
-  duelosDer.forEach((duelo, i) => {
-    const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
-      ganadoresOctavosDer[i] = ganador;
-      if (ganadoresOctavosDer.filter(Boolean).length === 4) {
-        avanzarRonda(ganadoresOctavosDer, colQFRight, (j) => (g) => {
-          ganadoresQFDer[j] = g;
-          if (ganadoresQFDer.filter(Boolean).length === 2) {
-            avanzarRonda(ganadoresQFDer, colSemiR, (k) => (sf) => {
-              finalistas[1 + k] = sf;
-              if (finalistas.filter(Boolean).length === 2) mostrarFinal();
-            });
-          }
-        });
-      }
-    });
-    colRight.appendChild(match);
-  });
-
-  function mostrarFinal() {
-    finalContainer.innerHTML = '';
-    championDisplay.innerHTML = '';
-    const match = crearMatch(finalistas[0], finalistas[1], '', (campeon) => {
-      championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='escudos/${campeon}.png'>`;
-    });
-    finalContainer.appendChild(match);
-  }
-
-  // Dibujar líneas entre cruces
-  function drawLineBetween(el1, el2) {
-    const svg = document.getElementById('lines-svg');
-    const r1 = el1.getBoundingClientRect();
-    const r2 = el2.getBoundingClientRect();
-    const x1 = r1.right + window.scrollX;
-    const y1 = r1.top + r1.height / 2 + window.scrollY;
-    const x2 = r2.left + window.scrollX;
-    const y2 = r2.top + r2.height / 2 + window.scrollY;
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", x1);
-    line.setAttribute("y1", y1);
-    line.setAttribute("x2", x2);
-    line.setAttribute("y2", y2);
-    line.setAttribute("stroke", "white");
-    line.setAttribute("stroke-width", "2");
-    svg.appendChild(line);
-  }
-
-  function clearLines() {
-    document.getElementById('lines-svg').innerHTML = '';
-  }
-
-  function conectarRondas() {
-    clearLines();
-    const columnas = [
-      'col-left', 'col-quarters-left', 'col-semifinal-left',
-      'final', 'col-semifinal-right', 'col-quarters-right', 'col-right'
-    ].map(id => Array.from(document.getElementById(id).children));
-    for (let i = 0; i < columnas.length - 1; i++) {
-      const colA = columnas[i];
-      const colB = columnas[i + 1];
-      const min = Math.min(colA.length, colB.length);
-      for (let j = 0; j < min; j++) {
-        drawLineBetween(colA[j], colB[Math.floor(j / 2)]);
-      }
-    }
-  }
-
-  const observer = new MutationObserver(() => {
-    requestAnimationFrame(conectarRondas);
-  });
-  observer.observe(document.getElementById('capture'), { childList: true, subtree: true });
-
-  // Botón compartir
-  const shareBtn = document.getElementById('shareBtn');
-  shareBtn.addEventListener('click', async () => {
-    const captureEl = document.getElementById('capture');
-    const canvas = await html2canvas(captureEl, { useCORS: true });
-    canvas.toBlob(async blob => {
-      const formData = new FormData();
-      formData.append('image', blob);
-      formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5');
-      try {
-        const res = await fetch('https://api.imgbb.com/1/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const json = await res.json();
-        const imageUrl = json.data.url;
-        window.open(`https://wa.me/?text=¡Mirá mi pronóstico de la Copa LPF! %0A${imageUrl}`, '_blank');
-      } catch (err) {
-        console.error('Error al subir la imagen', err);
-        alert('No se pudo compartir la imagen.');
-      }
-    });
-  });
-  </script>
+new MutationObserver(() => requestAnimationFrame(conectarRondas))
+  .observe(document.getElementById('capture'), { childList: true, subtree: true });
+</script>
 </body>
 </html>
-
