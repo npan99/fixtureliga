@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,27 +11,24 @@
       margin: 0;
       padding: 2rem;
       color: white;
-      position: relative;
     }
+
     #capture {
       width: 1080px;
       height: 1080px;
-      box-sizing: border-box;
-      margin: 0 auto;
-      transform: scale(1);
-      transform-origin: top left;
+      margin: auto;
       position: relative;
     }
+
     .fixture {
       display: flex;
       flex-direction: row;
       justify-content: space-around;
       align-items: center;
       gap: 1rem;
-      position: relative;
-      z-index: 1;
       height: 100%;
     }
+
     .column {
       display: flex;
       flex-direction: column;
@@ -38,24 +36,27 @@
       align-items: center;
       position: relative;
     }
+
     .match {
       background: #222;
       border-radius: 4px;
       padding: 0.3rem;
       text-align: center;
       width: 60px;
-      transition: transform 0.4s ease, background-color 0.3s ease;
     }
+
     .match .date {
       font-size: 0.6rem;
       color: #ccc;
       margin: 0.2rem 0;
     }
+
     .teams {
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
     }
+
     .team {
       display: flex;
       align-items: center;
@@ -64,17 +65,19 @@
       border-radius: 3px;
       padding: 0.2rem;
       cursor: pointer;
-      transition: all 0.3s ease, transform 0.3s ease;
     }
+
     .team img {
       width: 20px;
       height: 20px;
     }
+
     .team.selected {
       transform: scale(1.15);
       background-color: #007bff;
       box-shadow: 0 0 8px #007bff;
     }
+
     .trophy-column {
       width: 80px;
       display: flex;
@@ -82,15 +85,18 @@
       align-items: center;
       justify-content: center;
     }
+
     .trophy-column img {
       width: 40px;
       height: auto;
     }
+
     .champion {
       margin-top: 1rem;
       font-size: 0.8rem;
       text-align: center;
     }
+
     #shareBtn {
       display: block;
       margin: 2rem auto;
@@ -102,10 +108,12 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     #branding {
       text-align: center;
       margin-top: 2rem;
     }
+
     #branding img {
       width: 120px;
     }
@@ -134,7 +142,7 @@
   <img src="logo-bolavip.png" alt="Bolavip">
 </div>
 
-<button id="shareBtn">Descargar imagen 1080x1080</button>
+<button id="shareBtn">Compartir por WhatsApp</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -294,6 +302,7 @@ function conectarRondas() {
 new MutationObserver(() => requestAnimationFrame(conectarRondas))
   .observe(document.getElementById('capture'), { childList: true, subtree: true });
 
+// COMPARTIR POR WHATSAPP CON IMAGEN EN IMGBB
 document.getElementById('shareBtn').addEventListener('click', () => {
   const target = document.getElementById('capture');
   html2canvas(target, {
@@ -303,13 +312,32 @@ document.getElementById('shareBtn').addEventListener('click', () => {
     height: 1080,
     scale: 1
   }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'fixture-1080x1080.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    canvas.toBlob(blob => {
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const base64data = reader.result.split(',')[1];
+        const formData = new FormData();
+        formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5');
+        formData.append('image', base64data);
+
+        fetch('https://api.imgbb.com/1/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          const imageUrl = data.data.url;
+          const text = encodeURIComponent(`¡Mirá mi fixture de la Copa LPF! 🏆\n${imageUrl}`);
+          window.open(`https://wa.me/?text=${text}`, '_blank');
+        })
+        .catch(err => alert('Error al subir la imagen. Intentalo nuevamente.'));
+      };
+      reader.readAsDataURL(blob);
+    }, 'image/png');
   });
 });
 </script>
 </body>
 </html>
+
 
