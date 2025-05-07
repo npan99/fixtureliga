@@ -12,6 +12,15 @@
       color: white;
       position: relative;
     }
+    #capture {
+      width: 1080px;
+      height: 1080px;
+      box-sizing: border-box;
+      margin: 0 auto;
+      transform: scale(1);
+      transform-origin: top left;
+      position: relative;
+    }
     .fixture {
       display: flex;
       flex-direction: row;
@@ -20,6 +29,7 @@
       gap: 1rem;
       position: relative;
       z-index: 1;
+      height: 100%;
     }
     .column {
       display: flex;
@@ -27,11 +37,6 @@
       gap: 2rem;
       align-items: center;
       position: relative;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 2rem;
     }
     .match {
       background: #222;
@@ -107,27 +112,29 @@
   </style>
 </head>
 <body>
-<div id="capture" class="fixture">
-  <div class="column" id="col-left"></div>
-  <div class="column" id="col-quarters-left"></div>
-  <div class="column" id="col-semifinal-left"></div>
-  <div class="trophy-column">
-    <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
-    <div id="final" class="column"></div>
-    <div id="champion" class="champion"></div>
-  </div>
-  <div class="column" id="col-semifinal-right"></div>
-  <div class="column" id="col-quarters-right"></div>
-  <div class="column" id="col-right"></div>
-</div>
 
-<svg id="lines-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></svg>
+<div id="capture">
+  <div class="fixture">
+    <div class="column" id="col-left"></div>
+    <div class="column" id="col-quarters-left"></div>
+    <div class="column" id="col-semifinal-left"></div>
+    <div class="trophy-column">
+      <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
+      <div id="final" class="column"></div>
+      <div id="champion" class="champion"></div>
+    </div>
+    <div class="column" id="col-semifinal-right"></div>
+    <div class="column" id="col-quarters-right"></div>
+    <div class="column" id="col-right"></div>
+  </div>
+  <svg id="lines-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></svg>
+</div>
 
 <div id="branding">
   <img src="logo-bolavip.png" alt="Bolavip">
 </div>
 
-<button id="shareBtn">Compartir por WhatsApp</button>
+<button id="shareBtn">Descargar imagen 1080x1080</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -271,7 +278,14 @@ function conectarRondas() {
     const colA = document.getElementById(columnIds[i]).children;
     const colB = document.getElementById(columnIds[i + 1]).children;
     for (let j = 0; j < colA.length; j++) {
-      const idx = Math.floor(j / 2);
+      let idx;
+      if (i <= 2) {
+        idx = Math.floor(j / 2);
+      } else if (i >= 4) {
+        idx = j * 2;
+      } else {
+        idx = j;
+      }
       if (colB[idx]) drawLineBetween(colA[j], colB[idx]);
     }
   }
@@ -279,6 +293,23 @@ function conectarRondas() {
 
 new MutationObserver(() => requestAnimationFrame(conectarRondas))
   .observe(document.getElementById('capture'), { childList: true, subtree: true });
+
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const target = document.getElementById('capture');
+  html2canvas(target, {
+    backgroundColor: '#000',
+    useCORS: true,
+    width: 1080,
+    height: 1080,
+    scale: 1
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'fixture-1080x1080.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+});
 </script>
 </body>
 </html>
+
