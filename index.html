@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture 1 - Copa LPF</title>
+  <title>Simulador de Fixture OK - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -19,21 +19,11 @@
       margin: auto;
       position: relative;
       overflow-x: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .fixture {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
       gap: 1rem;
-      width: 100%;
-      flex-wrap: wrap;
-      overflow-x: auto;
-      padding: 1rem;
+      justify-items: center;
+      align-items: flex-start;
     }
 
     .column {
@@ -42,8 +32,6 @@
       gap: 1rem;
       align-items: center;
       flex: 1;
-      min-width: 200px;
-      padding: 1rem;
     }
 
     .match {
@@ -51,8 +39,7 @@
       border-radius: 4px;
       padding: 0.3rem;
       text-align: center;
-      width: 50px;
-      margin-bottom: 10px;
+      width: 100px;
     }
 
     .match .date {
@@ -89,12 +76,11 @@
     }
 
     .trophy-column {
-      width: 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 1rem;
+      gap: 1rem;
     }
 
     .trophy-column img {
@@ -133,9 +119,14 @@
     }
 
     @media (max-width: 600px) {
+      #capture {
+        grid-template-columns: 1fr 1fr;
+        padding: 0;
+      }
+
       .match {
-        width: 40px;
-        margin: 5px;
+        width: 80px;
+        margin-bottom: 10px;
       }
 
       .team img {
@@ -149,13 +140,6 @@
 
       #shareBtn {
         width: 90%;
-        padding: 0.5rem;
-      }
-
-      .fixture {
-        flex-direction: column;
-        padding: 0;
-        gap: 2rem;
       }
 
       .column {
@@ -168,20 +152,18 @@
 <body>
 
 <div id="capture">
-  <div class="fixture">
-    <div class="column" id="col-left"></div>
-    <div class="column" id="col-quarters-left"></div>
-    <div class="column" id="col-semifinal-left"></div>
-    <div class="trophy-column">
-      <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
-      <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
-      <div id="final" class="column"></div>
-      <div id="champion" class="champion"></div>
-    </div>
-    <div class="column" id="col-semifinal-right"></div>
-    <div class="column" id="col-quarters-right"></div>
-    <div class="column" id="col-right"></div>
+  <div class="column" id="col-left"></div>
+  <div class="column" id="col-quarters-left"></div>
+  <div class="column" id="col-semifinal-left"></div>
+  <div class="trophy-column">
+    <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
+    <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
+    <div id="final" class="column"></div>
+    <div id="champion" class="champion"></div>
   </div>
+  <div class="column" id="col-semifinal-right"></div>
+  <div class="column" id="col-quarters-right"></div>
+  <div class="column" id="col-right"></div>
 </div>
 
 <button id="shareBtn">Compartir por WhatsApp</button>
@@ -352,6 +334,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+
 
 
 
