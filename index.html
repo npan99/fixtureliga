@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture - Copa LPF</title>
+  <title>Simulador de Fixture - Copa LPF 2</title>
   <style>
     body {
       font-family: sans-serif;
@@ -137,8 +137,6 @@
 </head>
 <body>
 
-
-
 <div id="capture">
   <div class="fixture">
     <div class="column" id="col-left"></div>
@@ -148,11 +146,12 @@
       <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
       <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
       <div id="final" class="column"></div>
-      $1
-</div>
+      <div id="champion" class="champion"></div>
+    </div>
     <div class="column" id="col-semifinal-right"></div>
     <div class="column" id="col-quarters-right"></div>
     <div class="column" id="col-right"></div>
+  </div>
 </div>
 
 <button id="shareBtn">Compartir por WhatsApp</button>
@@ -264,6 +263,7 @@ duelosDer.forEach((duelo, i) => {
 
 function mostrarFinal() {
   finalContainer.innerHTML = '';
+  if (!championDisplay) return;
   championDisplay.innerHTML = '';
   const match = crearMatch(finalistaIzq, finalistaDer, '', (campeon) => {
     championDisplay.innerHTML = `<strong>¡Campeón!</strong><br><img src='escudos/${campeon}.png'>`;
@@ -273,3 +273,4 @@ function mostrarFinal() {
 </script>
 </body>
 </html>
+
