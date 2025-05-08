@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture 7 - Copa LPF</title>
+  <title>Simulador de Fixture 2 - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -246,8 +246,11 @@ window.onload = function() {
   // Crear y renderizar todos los partidos de octavos de final
   duelosIzq.forEach((duelo, i) => {
     const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
-      if (ganadoresIzq.length < 4) {
-        ganadoresIzq.push(ganador); // Añadir al array de ganadores
+      if (ganador === "sanlorenzo" || ganador === "tigre") {
+        // San Lorenzo y Tigre no deben avanzar juntos
+        if (ganadoresIzq.length < 4) {
+          ganadoresIzq.push(ganador);
+        }
       }
       if (ganadoresIzq.length === 4) {
         avanzarRonda(ganadoresIzq, colQFLeft, (j) => (g) => {
@@ -266,8 +269,11 @@ window.onload = function() {
 
   duelosDer.forEach((duelo, i) => {
     const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
-      if (ganadoresDer.length < 4) {
-        ganadoresDer.push(ganador); // Añadir al array de ganadores
+      if (ganador === "rosario" || ganador === "estudiantes") {
+        // Rosario y Estudiantes no deben avanzar juntos
+        if (ganadoresDer.length < 4) {
+          ganadoresDer.push(ganador);
+        }
       }
       if (ganadoresDer.length === 4) {
         avanzarRonda(ganadoresDer, colQFRight, (j) => (g) => {
@@ -322,6 +328,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+
 
 
 
