@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador2 de Fixture - Copa LPF</title>
+  <title>Simulador de Fixture 3 - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -160,18 +160,13 @@
 <body>
 
 <div id="capture">
-  <!-- Columna izquierda (octavos de final) -->
   <div class="column" id="col-left"></div>
-
-  <!-- Columna central con el logo de Bolavip y las rondas siguientes -->
   <div class="trophy-column">
     <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
     <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
     <div id="final" class="column"></div>
     <div id="champion" class="champion"></div>
   </div>
-
-  <!-- Columna derecha (octavos de final) -->
   <div class="column" id="col-right"></div>
 </div>
 
@@ -263,13 +258,12 @@ window.onload = function() {
   // Inicializar las variables para los ganadores
   let ganadoresIzq = [], ganadoresDer = [];
   let ganadoresQFIzq = [], ganadoresQFDer = [];
+  let finalistaIzq = null, finalistaDer = null;
 
   // Crear y renderizar todos los partidos de octavos de final
   duelosIzq.forEach((duelo, i) => {
     const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
-      if (ganadoresIzq.length < 4) {
-        ganadoresIzq.push(ganador); // Añadir al array de ganadores
-      }
+      ganadoresIzq.push(ganador);
       if (ganadoresIzq.length === 4) {
         avanzarRonda(ganadoresIzq, colQFLeft, (j) => (g) => {
           ganadoresQFIzq[j] = g;
@@ -287,9 +281,7 @@ window.onload = function() {
 
   duelosDer.forEach((duelo, i) => {
     const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
-      if (ganadoresDer.length < 4) {
-        ganadoresDer.push(ganador); // Añadir al array de ganadores
-      }
+      ganadoresDer.push(ganador);
       if (ganadoresDer.length === 4) {
         avanzarRonda(ganadoresDer, colQFRight, (j) => (g) => {
           ganadoresQFDer[j] = g;
@@ -343,6 +335,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+
 
 
 
