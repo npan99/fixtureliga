@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture - 3 Copa LPF</title>
+  <title>Simulador de Fixture 2 - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -239,15 +239,18 @@ function mostrarFinal() {
 
 // Espera a que se carguen todos los partidos
 window.onload = function() {
+  // Inicializar las variables para los ganadores
+  let ganadoresIzq = [], ganadoresDer = [];
+  let ganadoresQFIzq = [], ganadoresQFDer = [];
+
   // Crear y renderizar todos los partidos de octavos de final
   duelosIzq.forEach((duelo, i) => {
     const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
-      console.log('Ganador Izquierda:', ganador);
-      // Después de completar la ronda de octavos, avanzar a cuartos de final
+      ganadoresIzq.push(ganador); // Añadir al array de ganadores
       if (ganadoresIzq.length === 4) {
         avanzarRonda(ganadoresIzq, colQFLeft, (j) => (g) => {
           ganadoresQFIzq[j] = g;
-          if (ganadoresQFIzq.filter(Boolean).length === 2) {
+          if (ganadoresQFIzq.length === 2) {
             avanzarRonda(ganadoresQFIzq, colSemiL, (k) => (sf) => {
               finalistaIzq = sf;
               if (finalistaIzq && finalistaDer) mostrarFinal();
@@ -261,12 +264,11 @@ window.onload = function() {
 
   duelosDer.forEach((duelo, i) => {
     const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
-      console.log('Ganador Derecha:', ganador);
-      // Después de completar la ronda de octavos, avanzar a cuartos de final
+      ganadoresDer.push(ganador); // Añadir al array de ganadores
       if (ganadoresDer.length === 4) {
         avanzarRonda(ganadoresDer, colQFRight, (j) => (g) => {
           ganadoresQFDer[j] = g;
-          if (ganadoresQFDer.filter(Boolean).length === 2) {
+          if (ganadoresQFDer.length === 2) {
             avanzarRonda(ganadoresQFDer, colSemiR, (k) => (sf) => {
               finalistaDer = sf;
               if (finalistaIzq && finalistaDer) mostrarFinal();
@@ -316,6 +318,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+
 
 
 
