@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture - Copa LPF 2</title>
+  <title>Simulador de Fixture - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -158,6 +158,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+// Datos de partidos y fecha (sin cambios)
 const duelosIzq = [
   ['argentinos', 'instituto'],
   ['sanlorenzo', 'tigre'],
@@ -175,6 +176,7 @@ const fechas = [
   '10/05 - 16:30', '11/05 - 20:30', '10/05 - 21:00', '11/05 - 15:30'
 ];
 
+// Definición de contenedores
 const colLeft = document.getElementById('col-left');
 const colRight = document.getElementById('col-right');
 const colQFLeft = document.getElementById('col-quarters-left');
@@ -184,6 +186,7 @@ const colSemiR = document.getElementById('col-semifinal-right');
 const finalContainer = document.getElementById('final');
 const championDisplay = document.getElementById('champion');
 
+// Crear partidos y manejar selección de ganadores
 function crearMatch(equipo1, equipo2, fecha, avanzar) {
   const match = document.createElement('div');
   match.className = 'match';
@@ -207,12 +210,14 @@ function crearMatch(equipo1, equipo2, fecha, avanzar) {
   return match;
 }
 
+// Lógica para seleccionar ganador y avanzar
 function seleccionarGanador(g, otro, equipoGanador, avanzar) {
   g.classList.add('selected');
   otro.classList.remove('selected');
   if (avanzar && typeof avanzar === 'function') avanzar(equipoGanador);
 }
 
+// Avanzar a la siguiente ronda
 function avanzarRonda(equipos, container, siguienteAvance) {
   container.innerHTML = '';
   for (let i = 0; i < equipos.length; i += 2) {
@@ -221,46 +226,7 @@ function avanzarRonda(equipos, container, siguienteAvance) {
   }
 }
 
-const ganadoresOctavosIzq = [], ganadoresOctavosDer = [];
-const ganadoresQFIzq = [], ganadoresQFDer = [];
-let finalistaIzq = null, finalistaDer = null;
-
-duelosIzq.forEach((duelo, i) => {
-  const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
-    ganadoresOctavosIzq[i] = ganador;
-    if (ganadoresOctavosIzq.filter(Boolean).length === 4) {
-      avanzarRonda(ganadoresOctavosIzq, colQFLeft, (j) => (g) => {
-        ganadoresQFIzq[j] = g;
-        if (ganadoresQFIzq.filter(Boolean).length === 2) {
-          avanzarRonda(ganadoresQFIzq, colSemiL, (k) => (sf) => {
-            finalistaIzq = sf;
-            if (finalistaIzq && finalistaDer) mostrarFinal();
-          });
-        }
-      });
-    }
-  });
-  colLeft.appendChild(match);
-});
-
-duelosDer.forEach((duelo, i) => {
-  const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
-    ganadoresOctavosDer[i] = ganador;
-    if (ganadoresOctavosDer.filter(Boolean).length === 4) {
-      avanzarRonda(ganadoresOctavosDer, colQFRight, (j) => (g) => {
-        ganadoresQFDer[j] = g;
-        if (ganadoresQFDer.filter(Boolean).length === 2) {
-          avanzarRonda(ganadoresQFDer, colSemiR, (k) => (sf) => {
-            finalistaDer = sf;
-            if (finalistaIzq && finalistaDer) mostrarFinal();
-          });
-        }
-      });
-    }
-  });
-  colRight.appendChild(match);
-});
-
+// Función para mostrar el final
 function mostrarFinal() {
   finalContainer.innerHTML = '';
   if (!championDisplay) return;
@@ -270,7 +236,43 @@ function mostrarFinal() {
   });
   finalContainer.appendChild(match);
 }
+
+// Captura de imagen con html2canvas
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const target = document.getElementById('capture');
+  html2canvas(target, {
+    backgroundColor: '#000',  // Fondo negro
+    useCORS: true,
+    width: 1080,
+    height: 1080,
+    scale: 1
+  }).then(canvas => {
+    canvas.toBlob(blob => {
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const base64data = reader.result.split(',')[1];
+        const formData = new FormData();
+        formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5');  // ImgBB API key
+        formData.append('image', base64data);
+
+        fetch('https://api.imgbb.com/1/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          const imageUrl = data.data.url;
+          const text = encodeURIComponent(`¡Mirá mi fixture de la Copa LPF! 🏆\n${imageUrl}`);
+          window.open(`https://wa.me/?text=${text}`, '_blank');
+        })
+        .catch(err => alert('Error al subir la imagen. Intentalo nuevamente.'));
+      };
+      reader.readAsDataURL(blob);
+    }, 'image/png');
+  });
+});
 </script>
 </body>
 </html>
+
 
