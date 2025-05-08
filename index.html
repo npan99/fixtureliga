@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture - Copa LPF</title>
+  <title>Simulador de Fixture - 1 Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -161,7 +161,6 @@
 
 <div id="capture">
   <div class="column" id="col-left">
-    <h2>Cuartos de Final</h2>
     <div class="match">argentinos vs sanlorenzo</div>
     <div class="match">river vs racing</div>
     <div class="match">rosario vs huracan</div>
@@ -172,14 +171,12 @@
     <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
     <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
     <div id="final" class="column">
-      <h2>Final</h2>
       <div class="match">argentinos vs sanlorenzo</div>
     </div>
     <div id="champion" class="champion"></div>
   </div>
 
   <div class="column" id="col-right">
-    <h2>Semifinales</h2>
     <div class="match">argentinos vs sanlorenzo</div>
     <div class="match">river vs racing</div>
     <div class="match">rosario vs huracan</div>
@@ -212,10 +209,6 @@ const fechas = [
 // Definición de contenedores
 const colLeft = document.getElementById('col-left');
 const colRight = document.getElementById('col-right');
-const colQFLeft = document.getElementById('col-quarters-left');
-const colQFRight = document.getElementById('col-quarters-right');
-const colSemiL = document.getElementById('col-semifinal-left');
-const colSemiR = document.getElementById('col-semifinal-right');
 const finalContainer = document.getElementById('final');
 const championDisplay = document.getElementById('champion');
 
@@ -282,10 +275,10 @@ window.onload = function() {
     const match = crearMatch(duelo[0], duelo[1], fechas[i], (ganador) => {
       ganadoresIzq.push(ganador);
       if (ganadoresIzq.length === 4) {
-        avanzarRonda(ganadoresIzq, colQFLeft, (j) => (g) => {
+        avanzarRonda(ganadoresIzq, colLeft, (j) => (g) => {
           ganadoresQFIzq[j] = g;
           if (ganadoresQFIzq.length === 2) {
-            avanzarRonda(ganadoresQFIzq, colSemiL, (k) => (sf) => {
+            avanzarRonda(ganadoresQFIzq, colRight, (k) => (sf) => {
               finalistaIzq = sf;
               if (finalistaIzq && finalistaDer) mostrarFinal();
             });
@@ -300,10 +293,10 @@ window.onload = function() {
     const match = crearMatch(duelo[0], duelo[1], fechas[i + 4], (ganador) => {
       ganadoresDer.push(ganador);
       if (ganadoresDer.length === 4) {
-        avanzarRonda(ganadoresDer, colQFRight, (j) => (g) => {
+        avanzarRonda(ganadoresDer, colRight, (j) => (g) => {
           ganadoresQFDer[j] = g;
           if (ganadoresQFDer.length === 2) {
-            avanzarRonda(ganadoresQFDer, colSemiR, (k) => (sf) => {
+            avanzarRonda(ganadoresQFDer, finalContainer, (k) => (sf) => {
               finalistaDer = sf;
               if (finalistaIzq && finalistaDer) mostrarFinal();
             });
@@ -352,6 +345,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+
 
 
 
