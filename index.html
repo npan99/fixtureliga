@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Fixture 2  - Copa LPF</title>
+  <title>Simulador de Fixture - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
@@ -11,7 +11,10 @@
       margin: 0;
       padding: 1rem;
       color: white;
-      overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
     #capture {
@@ -21,10 +24,9 @@
       position: relative;
       overflow-x: auto;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 2fr 1fr; /* 1fr para las llaves y 2fr para el centro */
       gap: 1rem;
       justify-items: center;
-      align-items: flex-start;
     }
 
     .column {
@@ -33,9 +35,6 @@
       gap: 1rem;
       align-items: center;
       flex: 1;
-      min-width: 200px;
-      padding: 1rem;
-      justify-content: flex-start;
     }
 
     .match {
@@ -44,7 +43,6 @@
       padding: 0.3rem;
       text-align: center;
       width: 100px;
-      margin-bottom: 10px;
     }
 
     .match .date {
@@ -125,7 +123,7 @@
 
     @media (max-width: 600px) {
       #capture {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         padding: 0;
       }
 
@@ -162,17 +160,18 @@
 <body>
 
 <div id="capture">
+  <!-- Columna izquierda (octavos de final) -->
   <div class="column" id="col-left"></div>
-  <div class="column" id="col-quarters-left"></div>
-  <div class="column" id="col-semifinal-left"></div>
+
+  <!-- Columna central con el logo de Bolavip y las rondas siguientes -->
   <div class="trophy-column">
     <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
     <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
     <div id="final" class="column"></div>
     <div id="champion" class="champion"></div>
   </div>
-  <div class="column" id="col-semifinal-right"></div>
-  <div class="column" id="col-quarters-right"></div>
+
+  <!-- Columna derecha (octavos de final) -->
   <div class="column" id="col-right"></div>
 </div>
 
@@ -344,6 +343,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
 </script>
 </body>
 </html>
+
 
 
 
