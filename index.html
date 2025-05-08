@@ -1,21 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulador de Fixture - Copa LPF</title>
   <style>
     body {
       font-family: sans-serif;
       background: #000;
       margin: 0;
-      padding: 2rem;
+      padding: 1rem;
       color: white;
     }
 
     #capture {
-      width: 1080px;
-      height: 1080px;
+      width: 100vw;
+      height: 100vw;
+      max-width: 1080px;
       margin: auto;
       position: relative;
     }
@@ -23,18 +24,19 @@
     .fixture {
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
-      gap: 1rem;
+      gap: 0.5rem;
       height: 100%;
+      overflow-x: auto;
     }
 
     .column {
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 1rem;
       align-items: center;
-      position: relative;
+      flex: 1;
     }
 
     .match {
@@ -42,7 +44,7 @@
       border-radius: 4px;
       padding: 0.3rem;
       text-align: center;
-      width: 60px;
+      width: 50px;
     }
 
     .match .date {
@@ -68,8 +70,8 @@
     }
 
     .team img {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
     }
 
     .team.selected {
@@ -79,7 +81,7 @@
     }
 
     .trophy-column {
-      width: 80px;
+      width: 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -87,19 +89,19 @@
     }
 
     .trophy-column img {
-      width: 40px;
+      width: 30px;
       height: auto;
     }
 
     .champion {
-      margin-top: 1rem;
-      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      font-size: 0.7rem;
       text-align: center;
     }
 
     #shareBtn {
       display: block;
-      margin: 2rem auto;
+      margin: 1.5rem auto;
       padding: 0.5rem 1rem;
       font-size: 1rem;
       background: #00bb66;
@@ -107,15 +109,29 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      max-width: 300px;
+      width: 100%;
     }
 
     #branding {
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
 
     #branding img {
-      width: 120px;
+      width: 100px;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      .match {
+        width: 40px;
+      }
+
+      .team img {
+        width: 14px;
+        height: 14px;
+      }
     }
   </style>
 </head>
@@ -127,19 +143,14 @@
     <div class="column" id="col-quarters-left"></div>
     <div class="column" id="col-semifinal-left"></div>
     <div class="trophy-column">
+      <img src="logo-bolavip.png" alt="Bolavip" style="width: 60px; margin-bottom: 0.5rem;">
       <img src="https://cdn-icons-png.flaticon.com/512/862/862875.png" alt="Trofeo">
       <div id="final" class="column"></div>
-      <div id="champion" class="champion"></div>
     </div>
     <div class="column" id="col-semifinal-right"></div>
     <div class="column" id="col-quarters-right"></div>
     <div class="column" id="col-right"></div>
   </div>
-  <svg id="lines-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></svg>
-</div>
-
-<div id="branding">
-  <img src="logo-bolavip.png" alt="Bolavip">
 </div>
 
 <button id="shareBtn">Compartir por WhatsApp</button>
@@ -179,10 +190,10 @@ function crearMatch(equipo1, equipo2, fecha, avanzar) {
   teams.className = 'teams';
   const team1 = document.createElement('div');
   team1.className = 'team';
-  team1.innerHTML = `<img src='escudos/${equipo1}.png'>`;
+  team1.innerHTML = `<img src='escudos/${equipo1}.png' onerror="this.onerror=null;this.src='escudos/default.png';">`;
   const team2 = document.createElement('div');
   team2.className = 'team';
-  team2.innerHTML = `<img src='escudos/${equipo2}.png'>`;
+  team2.innerHTML = `<img src='escudos/${equipo2}.png' onerror="this.onerror=null;this.src='escudos/default.png';">`;
   const date = document.createElement('div');
   date.className = 'date';
   date.textContent = fecha;
@@ -257,87 +268,9 @@ function mostrarFinal() {
   });
   finalContainer.appendChild(match);
 }
-
-function drawLineBetween(el1, el2) {
-  const svg = document.getElementById('lines-svg');
-  const r1 = el1.getBoundingClientRect();
-  const r2 = el2.getBoundingClientRect();
-  const x1 = r1.left + r1.width + window.scrollX;
-  const y1 = r1.top + r1.height / 2 + window.scrollY;
-  const x2 = r2.left + window.scrollX;
-  const y2 = r2.top + r2.height / 2 + window.scrollY;
-  const midX = (x1 + x2) / 2;
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  const d = `M${x1},${y1} H${midX} V${y2} H${x2}`;
-  path.setAttribute("d", d);
-  path.setAttribute("stroke", "white");
-  path.setAttribute("stroke-width", "2");
-  path.setAttribute("fill", "none");
-  svg.appendChild(path);
-}
-
-function conectarRondas() {
-  document.getElementById('lines-svg').innerHTML = '';
-  const columnIds = [
-    'col-left', 'col-quarters-left', 'col-semifinal-left',
-    'final', 'col-semifinal-right', 'col-quarters-right', 'col-right'
-  ];
-  for (let i = 0; i < columnIds.length - 1; i++) {
-    const colA = document.getElementById(columnIds[i]).children;
-    const colB = document.getElementById(columnIds[i + 1]).children;
-    for (let j = 0; j < colA.length; j++) {
-      let idx;
-      if (i <= 2) {
-        idx = Math.floor(j / 2);
-      } else if (i >= 4) {
-        idx = j * 2;
-      } else {
-        idx = j;
-      }
-      if (colB[idx]) drawLineBetween(colA[j], colB[idx]);
-    }
-  }
-}
-
-new MutationObserver(() => requestAnimationFrame(conectarRondas))
-  .observe(document.getElementById('capture'), { childList: true, subtree: true });
-
-// COMPARTIR POR WHATSAPP CON IMAGEN EN IMGBB
-document.getElementById('shareBtn').addEventListener('click', () => {
-  const target = document.getElementById('capture');
-  html2canvas(target, {
-    backgroundColor: '#000',
-    useCORS: true,
-    width: 1080,
-    height: 1080,
-    scale: 1
-  }).then(canvas => {
-    canvas.toBlob(blob => {
-      const reader = new FileReader();
-      reader.onloadend = function () {
-        const base64data = reader.result.split(',')[1];
-        const formData = new FormData();
-        formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5');
-        formData.append('image', base64data);
-
-        fetch('https://api.imgbb.com/1/upload', {
-          method: 'POST',
-          body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-          const imageUrl = data.data.url;
-          const text = encodeURIComponent(`¡Mirá mi fixture de la Copa LPF! 🏆\n${imageUrl}`);
-          window.open(`https://wa.me/?text=${text}`, '_blank');
-        })
-        .catch(err => alert('Error al subir la imagen. Intentalo nuevamente.'));
-      };
-      reader.readAsDataURL(blob);
-    }, 'image/png');
-  });
-});
 </script>
 </body>
 </html>
+
 
 
