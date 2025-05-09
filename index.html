@@ -95,6 +95,7 @@
 <body>
   <h1>Simulador de Fixture - Copa LPF</h1>
   <div id="capture">
+    <img src="escudos/bolavip.png" alt="Bolavip" style="grid-column: 1 / -1; justify-self: center; width: 120px; margin-bottom: 1rem;" />
     <div class="column" id="octavos-izq"></div>
     <div class="column" id="cuartos-izq"></div>
     <div class="column" id="semis-izq"></div>
@@ -109,21 +110,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const duelosIzq = [
-      ['argentinos', 'instituto'],
-      ['sanlorenzo', 'tigre'],
-      ['river', 'barracas'],
-      ['racing', 'platense']
-    ];
+  ['argentinos', 'instituto'],
+  ['san lorenzo', 'tigre'],
+  ['river', 'barracas'],
+  ['racing', 'platense']
+];
     const duelosDer = [
-      ['rosario', 'estudiantes'],
-      ['huracan', 'riestra'],
-      ['boca', 'lanus'],
-      ['independiente', 'riestra']
-    ];
-    const fechas = [
-      '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
-      '10/05 - 16:30', '11/05 - 20:30', '10/05 - 21:00', '11/05 - 15:30'
-    ];
+  ['rosario', 'estudiantes'],
+  ['huracan', 'riestra'],
+  ['boca', 'lanus'],
+  ['independiente', 'ind. rivadavia']
+];
 
     function crearMatch(equipo1, equipo2, fecha, onSelect) {
       const match = document.createElement('div');
@@ -181,58 +178,55 @@
         semisDer: document.getElementById('semis-der'),
       };
 
-      function avanzarFase(duelos, container, siguienteCallback) {
-        if (!duelos.length) return;
-        const [proximo, ...resto] = duelos;
-        const match = crearMatch(proximo[0], proximo[1], '', (ganador) => {
-          siguienteCallback(ganador);
-          avanzarFase(resto, container, siguienteCallback);
-        });
-        container.appendChild(match);
-      }
-
       let finalistaIzq = null;
       let finalistaDer = null;
 
       let cuartosIzq = [], semisIzq = [];
       let cuartosDer = [], semisDer = [];
 
-      avanzarFase(duelosIzq, refs.octavosIzq, (ganador) => {
-        cuartosIzq.push(ganador);
-        if (cuartosIzq.length % 2 === 0) {
-          const match = crearMatch(cuartosIzq[cuartosIzq.length - 2], cuartosIzq[cuartosIzq.length - 1], '', (ganador2) => {
-            semisIzq.push(ganador2);
-            if (semisIzq.length === 2) {
-              const matchFinal = crearMatch(semisIzq[0], semisIzq[1], '', (ganador3) => {
-                finalistaIzq = ganador3;
-                if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
-              });
-              refs.semisIzq.appendChild(matchFinal);
-            }
-          });
-          refs.cuartosIzq.appendChild(match);
-        }
+      // Mostrar todos los partidos de octavos al cargar
+      duelosIzq.forEach(([a, b]) => {
+        const match = crearMatch(a, b, '', (ganador) => {
+          cuartosIzq.push(ganador);
+          if (cuartosIzq.length % 2 === 0) {
+            const match = crearMatch(cuartosIzq[cuartosIzq.length - 2], cuartosIzq[cuartosIzq.length - 1], '', (ganador2) => {
+              semisIzq.push(ganador2);
+              if (semisIzq.length === 2) {
+                const matchFinal = crearMatch(semisIzq[0], semisIzq[1], '', (ganador3) => {
+                  finalistaIzq = ganador3;
+                  if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
+                });
+                refs.semisIzq.appendChild(matchFinal);
+              }
+            });
+            refs.cuartosIzq.appendChild(match);
+          }
+        });
+        refs.octavosIzq.appendChild(match);
       });
 
-      avanzarFase(duelosDer, refs.octavosDer, (ganador) => {
-        cuartosDer.push(ganador);
-        if (cuartosDer.length % 2 === 0) {
-          const match = crearMatch(cuartosDer[cuartosDer.length - 2], cuartosDer[cuartosDer.length - 1], '', (ganador2) => {
-            semisDer.push(ganador2);
-            if (semisDer.length === 2) {
-              const matchFinal = crearMatch(semisDer[0], semisDer[1], '', (ganador3) => {
-                finalistaDer = ganador3;
-                if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
-              });
-              refs.semisDer.appendChild(matchFinal);
-            }
-          });
-          refs.cuartosDer.appendChild(match);
-        }
+      duelosDer.forEach(([a, b]) => {
+        const match = crearMatch(a, b, '', (ganador) => {
+          cuartosDer.push(ganador);
+          if (cuartosDer.length % 2 === 0) {
+            const match = crearMatch(cuartosDer[cuartosDer.length - 2], cuartosDer[cuartosDer.length - 1], '', (ganador2) => {
+              semisDer.push(ganador2);
+              if (semisDer.length === 2) {
+                const matchFinal = crearMatch(semisDer[0], semisDer[1], '', (ganador3) => {
+                  finalistaDer = ganador3;
+                  if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
+                });
+                refs.semisDer.appendChild(matchFinal);
+              }
+            });
+            refs.cuartosDer.appendChild(match);
+          }
+        });
+        refs.octavosDer.appendChild(match);
       });
 
       document.getElementById('shareBtn').addEventListener('click', () => {
-        html2canvas(document.getElementById('capture')).then(canvas => {
+        html2canvas(document.getElementById('capture'), { backgroundColor: '#000' }).then(canvas => {
           canvas.toBlob(blob => {
             const formData = new FormData();
             formData.append('key', '2ce546ba9af8cd899cb404ee319d34d5');
