@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simulador de Fixture - Copa LPF</title>
   <style>
     body {
@@ -30,7 +30,6 @@
       gap: 1rem;
       align-items: center;
       min-height: 200px;
-      border: 1px solid #333;
     }
     .match {
       background: #222;
@@ -54,6 +53,7 @@
       cursor: pointer;
       color: white;
       width: 100%;
+      text-transform: capitalize;
     }
     .team img {
       width: 20px;
@@ -74,8 +74,11 @@
       color: #ccc;
       text-align: center;
     }
-    #final, #champion {
-      margin-top: 2rem;
+    #final {
+      margin-top: 0;
+    }
+    #champion {
+      margin-top: 1rem;
       text-align: center;
     }
     #shareBtn {
@@ -92,14 +95,14 @@
 <body>
   <h1>Simulador de Fixture - Copa LPF</h1>
   <div id="capture">
-    <div class="column" id="octavos-izq"><small>Octavos Izq</small></div>
-    <div class="column" id="cuartos-izq"><small>Cuartos Izq</small></div>
-    <div class="column" id="semis-izq"><small>Semis Izq</small></div>
-    <div class="column" id="semis-der"><small>Semis Der</small></div>
-    <div class="column" id="cuartos-der"><small>Cuartos Der</small></div>
-    <div class="column" id="octavos-der"><small>Octavos Der</small></div>
+    <div class="column" id="octavos-izq"></div>
+    <div class="column" id="cuartos-izq"></div>
+    <div class="column" id="semis-izq"></div>
+    <div class="column" id="semis-der"></div>
+    <div class="column" id="cuartos-der"></div>
+    <div class="column" id="octavos-der"></div>
   </div>
-  <div id="final" class="column"><small>Final</small></div>
+  <div id="final" class="column"></div>
   <div id="champion" class="champion"></div>
   <button id="shareBtn">Compartir por WhatsApp</button>
 
@@ -130,10 +133,10 @@
 
       const team1 = document.createElement('div');
       team1.className = 'team';
-      team1.innerHTML = `<img src='escudos/${equipo1}.png' onerror="this.src='escudos/default.png'"><span>${equipo1}</span>`;
+      team1.innerHTML = `<img src='escudos/${equipo1}.png' onerror=\"this.src='escudos/default.png'\"><span>${equipo1}</span>`;
       const team2 = document.createElement('div');
       team2.className = 'team';
-      team2.innerHTML = `<img src='escudos/${equipo2}.png' onerror="this.src='escudos/default.png'"><span>${equipo2}</span>`;
+      team2.innerHTML = `<img src='escudos/${equipo2}.png' onerror=\"this.src='escudos/default.png'\"><span>${equipo2}</span>`;
       const date = document.createElement('div');
       date.className = 'date';
       date.textContent = fecha;
@@ -157,7 +160,7 @@
       });
 
       teams.appendChild(team1);
-      teams.appendChild(date);
+      if (fecha) teams.appendChild(date);
       teams.appendChild(team2);
       match.appendChild(teams);
       return match;
@@ -169,7 +172,7 @@
       duelos.forEach((duelo, i) => {
         const match = crearMatch(duelo[0], duelo[1], fechas[i] || '', (ganador) => {
           ganadores[i] = ganador;
-          if (ganadores.every(Boolean)) onComplete(ganadores);
+          if (ganadores.filter(Boolean).length === duelos.length) onComplete(ganadores);
         });
         container.appendChild(match);
       });
