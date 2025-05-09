@@ -118,7 +118,7 @@
       ['rosario', 'estudiantes'],
       ['huracan', 'riestra'],
       ['boca', 'lanus'],
-      ['independiente', 'independientemza']
+      ['independiente', 'riestra']
     ];
     const fechas = [
       '11/05 - 18:00', '10/05 - 14:00', '12/05 - 20:30', '10/05 - 18:45',
@@ -133,30 +133,23 @@
 
       const team1 = document.createElement('div');
       team1.className = 'team';
-      team1.innerHTML = `<img src='escudos/${equipo1}.png' onerror=\"this.src='escudos/default.png'\"><span>${equipo1}</span>`;
+      team1.innerHTML = `<img src='escudos/${equipo1}.png' onerror="this.src='escudos/default.png'"><span>${equipo1}</span>`;
       const team2 = document.createElement('div');
       team2.className = 'team';
-      team2.innerHTML = `<img src='escudos/${equipo2}.png' onerror=\"this.src='escudos/default.png'\"><span>${equipo2}</span>`;
+      team2.innerHTML = `<img src='escudos/${equipo2}.png' onerror="this.src='escudos/default.png'"><span>${equipo2}</span>`;
       const date = document.createElement('div');
       date.className = 'date';
       date.textContent = fecha;
 
-      let locked = false;
       team1.addEventListener('click', () => {
-        if (!locked) {
-          team1.classList.add('selected');
-          team2.classList.remove('selected');
-          locked = true;
-          onSelect(equipo1);
-        }
+        team1.classList.add('selected');
+        team2.classList.remove('selected');
+        onSelect(equipo1);
       });
       team2.addEventListener('click', () => {
-        if (!locked) {
-          team2.classList.add('selected');
-          team1.classList.remove('selected');
-          locked = true;
-          onSelect(equipo2);
-        }
+        team2.classList.add('selected');
+        team1.classList.remove('selected');
+        onSelect(equipo2);
       });
 
       teams.appendChild(team1);
@@ -164,18 +157,6 @@
       teams.appendChild(team2);
       match.appendChild(teams);
       return match;
-    }
-
-    function renderFase(duelos, container, fechas = [], onComplete) {
-      container.innerHTML = '';
-      const ganadores = new Array(duelos.length);
-      duelos.forEach((duelo, i) => {
-        const match = crearMatch(duelo[0], duelo[1], fechas[i] || '', (ganador) => {
-          ganadores[i] = ganador;
-          if (ganadores.filter(Boolean).length === duelos.length) onComplete(ganadores);
-        });
-        container.appendChild(match);
-      });
     }
 
     function mostrarFinal(izq, der) {
@@ -200,31 +181,54 @@
         semisDer: document.getElementById('semis-der'),
       };
 
+      function avanzarFase(duelos, container, siguienteCallback) {
+        if (!duelos.length) return;
+        const [proximo, ...resto] = duelos;
+        const match = crearMatch(proximo[0], proximo[1], '', (ganador) => {
+          siguienteCallback(ganador);
+          avanzarFase(resto, container, siguienteCallback);
+        });
+        container.appendChild(match);
+      }
+
       let finalistaIzq = null;
       let finalistaDer = null;
 
-      renderFase(duelosIzq, refs.octavosIzq, fechas.slice(0, 4), (ganadoresQF) => {
-        renderFase([
-          [ganadoresQF[0], ganadoresQF[1]],
-          [ganadoresQF[2], ganadoresQF[3]]
-        ], refs.cuartosIzq, [], (ganadoresSF) => {
-          renderFase([[ganadoresSF[0], ganadoresSF[1]]], refs.semisIzq, [], (r) => {
-            finalistaIzq = r[0];
-            if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
+      let cuartosIzq = [], semisIzq = [];
+      let cuartosDer = [], semisDer = [];
+
+      avanzarFase(duelosIzq, refs.octavosIzq, (ganador) => {
+        cuartosIzq.push(ganador);
+        if (cuartosIzq.length % 2 === 0) {
+          const match = crearMatch(cuartosIzq[cuartosIzq.length - 2], cuartosIzq[cuartosIzq.length - 1], '', (ganador2) => {
+            semisIzq.push(ganador2);
+            if (semisIzq.length === 2) {
+              const matchFinal = crearMatch(semisIzq[0], semisIzq[1], '', (ganador3) => {
+                finalistaIzq = ganador3;
+                if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
+              });
+              refs.semisIzq.appendChild(matchFinal);
+            }
           });
-        });
+          refs.cuartosIzq.appendChild(match);
+        }
       });
 
-      renderFase(duelosDer, refs.octavosDer, fechas.slice(4, 8), (ganadoresQF) => {
-        renderFase([
-          [ganadoresQF[0], ganadoresQF[1]],
-          [ganadoresQF[2], ganadoresQF[3]]
-        ], refs.cuartosDer, [], (ganadoresSF) => {
-          renderFase([[ganadoresSF[0], ganadoresSF[1]]], refs.semisDer, [], (r) => {
-            finalistaDer = r[0];
-            if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
+      avanzarFase(duelosDer, refs.octavosDer, (ganador) => {
+        cuartosDer.push(ganador);
+        if (cuartosDer.length % 2 === 0) {
+          const match = crearMatch(cuartosDer[cuartosDer.length - 2], cuartosDer[cuartosDer.length - 1], '', (ganador2) => {
+            semisDer.push(ganador2);
+            if (semisDer.length === 2) {
+              const matchFinal = crearMatch(semisDer[0], semisDer[1], '', (ganador3) => {
+                finalistaDer = ganador3;
+                if (finalistaIzq && finalistaDer) mostrarFinal(finalistaIzq, finalistaDer);
+              });
+              refs.semisDer.appendChild(matchFinal);
+            }
           });
-        });
+          refs.cuartosDer.appendChild(match);
+        }
       });
 
       document.getElementById('shareBtn').addEventListener('click', () => {
